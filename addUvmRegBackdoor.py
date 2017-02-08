@@ -105,8 +105,11 @@ for m in re.finditer(r'^\s*class (?P<SVregister>{block}_\S+) extends uvm_reg;\s+
                                                                                     SVfileContents, flags=re.DOTALL|re.MULTILINE):
     mystr = ""
     paragraph = ""
-    for field in BLKregisterDict[m.group('SVregister').replace('_MAC_{block}_REG'.format(block=blockname),'')]:
-       mystr += myline.format(BLKfile_fieldname = field, UpperFieldname = field.upper())
+    try:
+        for field in BLKregisterDict[m.group('SVregister').replace('_MAC_{block}_REG'.format(block=blockname),'')]:
+           mystr += myline.format(BLKfile_fieldname = field, UpperFieldname = field.upper())
+    except KeyError as err:
+        print ("Skipping register, could not find: {}".format(err))
     
     paragraph = m.group().replace(m.group(2), '')
     SVfileContents = SVfileContents.replace(paragraph + m.group(2), paragraph + mystr + m.group(2))
